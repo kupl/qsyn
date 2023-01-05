@@ -19,4 +19,6 @@ WORKDIR /workdir
 COPY ./qsyn /workdir/qsyn
 COPY ./benchmarks /workdir/benchmarks
 COPY ./requirements.txt /workdir/
+COPY ./transpile_qc.py /workdir/
+
 RUN pip3 install -r requirements.txt

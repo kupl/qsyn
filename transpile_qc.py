@@ -1,3 +1,9 @@
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+
+
 import numpy as np
 from qiskit import QuantumCircuit
 from cirq import Simulator
@@ -7,6 +13,10 @@ import argparse
 from qsyn.set_synthesis import *
 from qiskit.extensions import UnitaryGate
 from qsyn.state_search import * 
+from warnings import filterwarnings
+# filterwarnings(action='ignore', category=DeprecationWarning, message='`np.int` is a deprecated alias')
+# filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` is a deprecated alias')
+
 
 if __name__=="__main__":
     basis_gates = ['u3', 'cx']

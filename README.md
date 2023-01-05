@@ -6,7 +6,7 @@ Our algorithm produce synthesis of quantum circuit, given by user-provided in/ou
 
 ## Setup
 
-We present two option for setup : (i) by building Docker image or (ii) by installing required python libraries via \verb*|pip|. Among two options, we recommend using Docker so that user's local environment is separated. 
+We present two option for setup : (i) by building Docker image or (ii) by installing required python libraries via `pip`. Among two options, we recommend using Docker so that user's local environment is separated. 
 
 
 ### Via Docker
@@ -46,11 +46,6 @@ python3 qsyn/run_single.py --benchmark GHZ_from_100  --mode Ours
 ```
 
 
-## How to Run Our Program
-
-In this section, we give step-by-step instruction to reproduce our result of synthesis.
-We also explain how to give new input to our program (i.e., new synthesis problem).
-
 
 
 ### Running Single Synthesis Problem
@@ -69,7 +64,7 @@ three_superpose , M_valued , GHZ_from_100 , GHZ_by_iSWAP, GHZ_by_QFT , GHZ_Game 
 ```
 Note that name is aligned with benchmarks in Table~3.
 	
-- For \verb|[Mode]|, insert name of  synthesis algorithm mode. The mode is one of following four (refer Section~5.1 of our paper for more detail) :
+- For `[Mode]`, insert name of  synthesis algorithm mode. The mode is one of following four (refer Section~5.1 of our paper for more detail) :
 	- `Ours` :  Main setting of our modular synthesis
 	- `Ours_no_prune` : Ours with no module-level pruning.
 	- `Base`  : Naive-BFS-based synthesis algorithm with basic pruning.
@@ -84,8 +79,6 @@ python3 qsyn/run_single.py --benchmark GHZ_from_100  --mode Ours
 
 ### Reproducing Table~3 (in our paepr)
 
-
-
 Whole benchmark run for reproduction of Table~3 is done by running `run_all.py` file.
 Following command will run whole benchmarks under `/benchmarks` for each mode of synthesis:
 ```
@@ -94,6 +87,78 @@ python3 qsyn/run_all.py  --mode [Mode]
 where `[Mode]` specifies setting for synthesis, as one of `Ours`, `Ours_no_prune`, `Base`, `Base_no_prune`.
 
 ### Giving New Synthesis Problem
+
+In this section, we explain how to prepare (new) synthesis problem that our program will adopt.
+Users need to specify several information of synthesis problem, including input/output state vectors and component gates in `.json` format.
+Following is template for benchmark `.json` file.
+```
+{
+	"ID": [Name of Synthesis Problem],
+	"Spec Type": "Partial Spec",
+	"Spec": {
+		"qreg_size": [Size of qregister],
+		"max_inst_allowed": 10,
+		"spec_object": [
+			{
+			"input":  [input state vector],
+			"output": [output state vector]
+			},
+			{
+			"input":  [input state vector],
+			"output": [output state vector]
+			},
+		...
+		],
+		"components": [Component Gates]
+	},
+	"Equiv Phase" : [Global Phase Ignorance Option]
+}
+```
+
+
+Users need to insert content on part indicated with square brackets `[ ]`.
+(for now,  field value of `"Spec Type"` and `"max_inst_allowed"` can be ignored). Specifically, required item are as follows:
+- `"ID"` : (Any) name for the synthesis problem.	
+
+- `"qreg_size"` : Specify number of qubits of circuit to synthesize in integer type value. This corresponds to $N$ in our definition of synthesis problem (see Section~3 in our paper for detail)
+
+
+- `"spec_object"` :  Put list of input/output statevectors that circuit should satisfy. This corresponds to $E$ in our definition. Insert inputstate vector at `[input state vector]` and output statevector at `[output state vector]`. Valid form of statevector value should be written by sequence of (float) number in string value, with delimiter by comma `,`. For example, followings are valid form of in/output statevector (note that $0.7071..  = \frac{1}{\sqrt{2}}$).
+
+	```
+	"0,  0,  0,  0,  1, 0, 0, 0 " 
+
+	" 0.70710678118,  0,  0,  0,  0, 0, 0, 0.70710678118 "
+	```
+
+	Each string value denotes $\ket{100},  \frac{1}{\sqrt{2}}(\ket{000} + \ket{111})$.
+	In case of complex numbers, following Python's representation it should be written as `a+b j` where `a` and `b` is some float number (e.g, `0.25-0.25j`). 
+
+- `"components"` : Specify component gates used for circuit presentation. This corresponds to $\mathcal{G}$ in our definition. At `[Component Gates]`, list name of component gates with delimiter `,` in string value. For example, to specify Hadamard gate and CNOT gate as component gate, insert following :
+    ```
+    "H, CNOT"
+    ```
+    Conceptually, our synthesis algorithm generally adopts any of quantum gate. However, efficient interface for user specifying component gate is  yet in development.
+    
+    Instead in an ad-hoc way, users may specify their component gate by adding items on dictionary variable of name `TO_CIRQ_GATE` at `/qsyn/set_synthesis.py` in format of
+    \[
+        \texttt{[name of gate]: [cirq.Gate instance] }.
+    \]
+Predefined gates (in `TO_CIRQ_GATE`) are listed in Appendix
+
+
+- `"Equiv Phase"` : Whether to ignore global phase when validating circuit. Give in json boolean type value `true` to ignore global phase, otherwise `false`.
+
+For example of this `.json` file template, refer any of file under `/benchmark` directory.
+
+After generating such `.json` file, put it under `/benchmark` folder.
+Then run following command to start synthesis:
+
+```
+python3 qsyn/run_single.py --benchmark [your file name]  --mode [Mode]
+```
+where `[your file name]` is name of `.json` file newly generated.
+
 
 
 ### Reproducing Qiskit's Transpile

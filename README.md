@@ -144,7 +144,7 @@ Users need to insert content on part indicated with square brackets `[ ]`.
     \[
         \texttt{[name of gate]: [cirq.Gate instance] }.
     \]
-Predefined gates (in `TO_CIRQ_GATE`) are listed in Appendix
+
 
 
 - `"Equiv Phase"` : Whether to ignore global phase when validating circuit. Give in json boolean type value `true` to ignore global phase, otherwise `false`.

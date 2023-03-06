@@ -18,7 +18,9 @@ from timeit import default_timer as timer
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', type = str, default="Ours")
+    parser.add_argument('--mode', type = str, default="Ours", help="Put name of synthesis algorithm." 
+                                                                    + "\nIt can be one of \'Ours\', \'Ours_no_prune\', \'Base\', \'Base_no_prune\'."
+                                                                    + "\nFor detaield specification of each algorithm mode, see our paper.")
     args = parser.parse_args()
     benchmarks = [
         'three_superpose'

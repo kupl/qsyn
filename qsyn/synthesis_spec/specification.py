@@ -5,8 +5,27 @@ import numpy as np
 
 
 class InvalidIOException(Exception):
-    pass
+    def __init__(self, io_pairs):
+        msg_builder = ""
+        invalid_arr_type = None
+        invalid_arr = None
+        invalid_arr_idx= None
+        for pair_idx, io_pair in enumerate(io_pairs):
+                    in_nparr, out_nparr = io_pair
+                    if not is_valid_amplitude(in_nparr):
+                        invalid_arr_type = "input"
+                        invalid_arr_idx = pair_idx
+                        invalid_arr =  in_nparr
+                        break
+                    if not is_valid_amplitude(out_nparr):
+                        invalid_arr_type = "output"
+                        invalid_arr_idx = pair_idx
+                        invalid_arr =  out_nparr
+                        break 
+        super().__init__(f'\n\n{invalid_arr_idx}-th {invalid_arr_type} state vector {invalid_arr} is invalid' 
+                         +'\nThe state vector should be normalized.')
 
+    
 
 class Spec():
     FULL_SYN_SPEC = "Full Spec"
@@ -26,7 +45,8 @@ class Spec():
         if self.type_of_spec == Spec.PART_SYN_SPEC:
             self.num_of_ios = len(self._target_object.get_io_pairs())
         if self.validate_spec() == False:
-            raise InvalidIOException()
+            io_pairs = self.spec_object.get_io_pairs().copy()
+            raise InvalidIOException(io_pairs)
 
     @property
     def id(self):

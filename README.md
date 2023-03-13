@@ -1,7 +1,11 @@
+
+
 # Modular Component-based Quantum Circuit Synthesis
 
 This is repository for implementation of paper "Modular Component-based Quantum Circuit Synthesis".
 Our algorithm produce synthesis of quantum circuit, given by user-provided in/output spec and component gates.
+
+** For published-version of artifact and artifact manual**, follow zenodo : https://doi.org/10.5281/zenodo.7710436
 
 
 ## Setup
